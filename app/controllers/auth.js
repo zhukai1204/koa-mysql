@@ -3,41 +3,55 @@ import superagent from 'superagent';
 import querystring from 'querystring';
 import URL from 'url';
 
-const getInfo = (url)=>{
+const getInfo = (url, cookies)=>{
+  if(cookies) request.cookie(cookies)
   return new Promise((resolve, reject) => {
-    superagent.get(url).end((err, res)=>{
+    let j = request.jar();
+    request.get({url:url, jar: j},(err, httpResponse, body)=>{
       if(err){
         resolve(false)
       }else{
-        resolve(res);
+        resolve({cookie:j.getCookies(url),cookieString:j.getCookieString(url), body:body});
       }
     })
   });
 }
 
-const post = (url, formData)=>{
+const post = (url, formData={}, cookies)=>{
   return new Promise((resolve, reject) => {
-    request.post({url:url, form: formData}, function optionalCallback(err, httpResponse, body) {
+    if(cookies) request.cookie(cookies)
+    let j = request.jar();
+    request.post({url:url, form: formData, jar: j}, (err, httpResponse, body)=>{
       if (err) {
         resolve(false);
       }else{
-        resolve(body);
+        resolve({
+          cookies:j.getCookies(url),
+          cookieString:j.getCookieString(url),
+          body:body
+        });
       }
-      console.log('Upload successful!  Server responded with:', body);
     });
   });
 }
 
+const superagentPost = (url, data, cookies)=>{
+  return new Promise((resolve, reject) => {
+    superagent
+    .post(url)
+    .send(data) // sends a JSON post body
+    .set('Content-type', 'application/x-www-form-urlencoded')
+    .set('Cookie', cookies)
+    .type('form')
+    .end(res => {
+      resolve(res);
+    })
+  });
+}
+
+
 const xiaoMi = async (ctx, next) => {
   let info = await getInfo('https://account.xiaomi.com');
-  let secInfo = await getInfo(info['redirects'][1]);
-  let {query} = URL.parse(info['redirects'][1]);
-  let {callback, sid} = querystring.parse(query);
-  /*let formData = {
-    _json:true,
-    callback:callback,
-    sid:sid
-  };*/
   let formData = {
     _json:true,
     callback:"https://account.xiaomi.com/sts?sign=ZvAtJIzsDsFe60LdaPa76nNNP58%3D&followup=https%3A%2F%2Faccount.xiaomi.com%2Fpass%2Fauth%2Fsecurity%2Fhome&sid=passport",
@@ -49,9 +63,9 @@ const xiaoMi = async (ctx, next) => {
     hash:'E211E91AE6A401EFC3CC331132366EFA'
   }
   let url = `https://account.xiaomi.com/pass/serviceLoginAuth2?_dc=${Date.now()}`;
-  let result = await post(url, formData);
-
-  ctx.body = result;
+  let result = await post(url, formData, info['cookieString']);
+  let userinfo = await getInfo('https://account.xiaomi.com/pass/auth/services/home?cUserId=ovMr52WrWLLSQln-rSicqIZryig&userId=292420413', result['cookieString']);
+  ctx.body = userinfo;
 };
 
 export default {
