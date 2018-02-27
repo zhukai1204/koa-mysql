@@ -16,7 +16,8 @@
     "mysql": "^2.15.0",
     "nodemon": "^1.11.0",
     "nunjucks": "^3.0.1",
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "superagent": "^3.8.2"
   },
   "devDependencies": {
     "babel-polyfill": "^6.26.0",
