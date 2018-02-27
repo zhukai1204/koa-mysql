@@ -46,7 +46,7 @@ const xiaoMi = async (ctx, next) => {
     "_sign":"2&V1_passport&JO7oplyppgkN/TiDH69nleQr10g=",
     serviceParam :'{"checkSafePhone":false}',
     user:'13438393804',
-    hash:'8B5832D68C10DDE33503B3E386F2B113'
+    hash:'E211E91AE6A401EFC3CC331132366EFA'
   }
   let url = `https://account.xiaomi.com/pass/serviceLoginAuth2?_dc=${Date.now()}`;
   let result = await post(url, formData);
