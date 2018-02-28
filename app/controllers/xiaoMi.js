@@ -50,7 +50,7 @@ const superagentPost = (url, data, cookies)=>{
 }
 
 
-const xiaoMi = async (ctx, next) => {
+const auth = async (ctx, next) => {
   let info = await getInfo('https://account.xiaomi.com');
   let formData = {
     _json:true,
@@ -69,5 +69,5 @@ const xiaoMi = async (ctx, next) => {
 };
 
 export default {
-  xiaoMi
+  auth
 };

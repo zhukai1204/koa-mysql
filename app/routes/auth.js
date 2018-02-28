@@ -1,9 +1,9 @@
 import koaRouter from 'koa-router';
-import auth from '../controllers/auth';
+import xiaoMi from '../controllers/xiaoMi';
 
 const router = koaRouter({
   prefix: '/auth'
 });
-router.get('/xiaomi', auth.xiaoMi);
+router.get('/xiaomi', xiaoMi.auth);
 
 module.exports = router;
